@@ -1,3 +1,5 @@
+// NOTE: Additional Perlin-noise-driven animation added by [JINGKE PAN]
+// for the individual assignment (floating motion for wheels).
 class Wheel {
   constructor(x, y, baseRadius, palette) {
     this.x = x;
@@ -8,6 +10,12 @@ class Wheel {
 
     this.rotation = random(TWO_PI);          // Initial rotation
     this.rotationSpeed = random(-0.01, 0.01); // Slow spinning motion
+
+
+    // === Individual Work: Perlin noise floating system ===
+    // Each wheel receives unique noise seeds and a random floating radius.
+    // This creates smooth drifting motion that differentiates my individual version
+    // from the static group design.
 
     // --- Individual task: Perlin-noise-based floating position ---
     // Each wheel gets its own noise seeds so they float differently.
@@ -49,6 +57,8 @@ class Wheel {
     }
   }
 
+  // --- Individual Work: update noise-driven offsets ---
+  // Sample Perlin noise over time to animate the wheel’s floating position.
   // Update wheel rotation and ring animations
     update() {
     // Update rotation
@@ -67,14 +77,16 @@ class Wheel {
     const nx = noise(this.floatNoiseX + t);
     const ny = noise(this.floatNoiseY + t);
 
-    this.offsetX = map(nx, 0, 1, -this.floatRadius, this.floatRadius);
-    this.offsetY = map(ny, 0, 1, -this.floatRadius, this.floatRadius);
+    this.offsetX = map(nx, 0, 1, -this.floatRadius, this.floatRadius); // x-axis offset
+    this.offsetY = map(ny, 0, 1, -this.floatRadius, this.floatRadius); // y-axis offset
   }
 
 
-  // Draw wheel, its shadows, and all ring layers
+    // Draw wheel, its shadows, and all ring layers
   display() {
     push();
+    //Individual work
+    // Use animated floating offsets instead of the static group position.
     translate(this.x + this.offsetX, this.y + this.offsetY);
     rotate(this.rotation);
 
@@ -118,8 +130,10 @@ class Wheel {
   }
   // Return the current animated position of this wheel,
   // including the Perlin-noise-driven offset.
+  // Helper function added for the individual task.
+  // Allows connectors to access the wheel’s animated position.
   getCurrentPosition() {
-    return createVector(this.x + this.offsetX, this.y + this.offsetY);
+    return createVector(this.x + this.offsetX, this.y + this.offsetY);          // Return a p5.Vector object
   }
 }
 

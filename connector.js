@@ -1,4 +1,9 @@
+// NOTE: Perlin-noise animation for connectors added by [JINGKE PAN]
+// to differentiate individual work from the group version.
 class Connector {
+  // === Individual Work: Perlin noise wobble for connectors ===
+  // Each connector receives its own noise seeds to animate
+  // the quadratic control point with organic motion.
   constructor(startWheel, endPos) {
     this.startWheel = startWheel;  // Wheel where the connector begins
     this.endPos = endPos.copy();   // End point of the curve
@@ -18,7 +23,8 @@ class Connector {
     this.ctrlOffsetY = 0;
   }
 
-  // Animate the connector's slight wobble
+  // --- Individual Work: noise-based control point drift ---
+  // The control point is offset using Perlin noise to create smooth wobbling.
   update() {
     // Simple time-based wobble (existing behaviour)
     this.t += 0.02;
@@ -34,11 +40,12 @@ class Connector {
     this.ctrlOffsetX = map(nx, 0, 1, -20, 20);
     this.ctrlOffsetY = map(ny, 0, 1, -20, 20);
   }
-
+    
     display() {
     // Get the wheel's current animated position (including floating offset)
     let startPos;
-
+    // Use the wheel's noise-driven animated position (individual work)
+    // instead of the static group position.
     if (this.startWheel.getCurrentPosition) {
       // Use the helper if available (individual task behaviour).
       startPos = this.startWheel.getCurrentPosition();
@@ -62,8 +69,8 @@ class Connector {
     // cy += sin(this.t) * 15;
 
     // --- Individual task: add Perlin-noise-based offset to the control point ---
-    cx += this.ctrlOffsetX;
-    cy += this.ctrlOffsetY;
+    cx += this.ctrlOffsetX;  // Add the Perlin-noise-based offset to the x-coordinate
+    cy += this.ctrlOffsetY;  // Add the Perlin-noise-based offset to the y-coordinate
 
     // Now draw the curve as before
     // Shadow curve
@@ -77,16 +84,16 @@ class Connector {
 
     // Main coloured curve
     stroke(this.color);
-    strokeWeight(this.strokeAnim);
-    noFill();
-    beginShape();
-    vertex(x1, y1);
+    strokeWeight(this.strokeAnim);      // Increase the stroke width over time
+    noFill();                           // No fill for the curve
+    beginShape();                       // Start drawing the curve
+    vertex(x1, y1);                    // Start at the start point  
     quadraticVertex(cx, cy, x2, y2);
     endShape();
 
     // Dot at the starting point
-    noStroke();
-    fill(this.color);
-    ellipse(x1, y1, 10, 10);
+    noStroke();                       // No stroke for the dot
+    fill(this.color);                 // Use the same colour as the curve
+    ellipse(x1, y1, 10, 10);          // Draw a small dot at the start point
   }
 }
