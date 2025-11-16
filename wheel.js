@@ -8,6 +8,18 @@ class Wheel {
 
     this.rotation = random(TWO_PI);          // Initial rotation
     this.rotationSpeed = random(-0.01, 0.01); // Slow spinning motion
+
+    // --- Individual task: Perlin-noise-based floating position ---
+    // Each wheel gets its own noise seeds so they float differently.
+    this.floatNoiseX = random(1000);
+    this.floatNoiseY = random(2000);
+
+    // Randomly choose how far this wheel is allowed to drift.
+    this.floatRadius = random(10, 30); // max drift in pixels
+
+    // These will store the animated offset from the base position.
+    this.offsetX = 0;
+    this.offsetY = 0;
   }
 
   // Create multiple ring layers with random types and colors
@@ -38,15 +50,32 @@ class Wheel {
   }
 
   // Update wheel rotation and ring animations
-  update() {
+    update() {
+    // Update rotation
     this.rotation += this.rotationSpeed;
-    for (let r of this.rings) r.update();
+
+    // Update each ring
+    for (let r of this.rings) {
+      r.update();
+    }
+
+    // --- Individual task: update noise-driven floating offset ---
+    // Use Perlin noise over time to create a smooth drifting motion.
+    const t = frameCount * 0.005;
+
+    // Noise values are in [0, 1], map them to a symmetric range.
+    const nx = noise(this.floatNoiseX + t);
+    const ny = noise(this.floatNoiseY + t);
+
+    this.offsetX = map(nx, 0, 1, -this.floatRadius, this.floatRadius);
+    this.offsetY = map(ny, 0, 1, -this.floatRadius, this.floatRadius);
   }
+
 
   // Draw wheel, its shadows, and all ring layers
   display() {
     push();
-    translate(this.x, this.y);
+    translate(this.x + this.offsetX, this.y + this.offsetY);
     rotate(this.rotation);
 
     // Large soft background discs to increase visual density
@@ -87,4 +116,10 @@ class Wheel {
    drawingContext.setLineDash([]);
     pop();
   }
+  // Return the current animated position of this wheel,
+  // including the Perlin-noise-driven offset.
+  getCurrentPosition() {
+    return createVector(this.x + this.offsetX, this.y + this.offsetY);
+  }
 }
+
